@@ -159,15 +159,15 @@ local function canonicalize(raw_author, raw_institute)
   local authors = ensure_list(raw_author):map(to_named_object)
 
   for _, author in ipairs(authors) do
-    author.institute = resolve_institutes(
-      ensure_list(author.institute),
+    author.affiliations = resolve_institutes(
+      ensure_list(author.affiliations),
       institutes
     )
   end
 
   -- Merge institutes defined in author objects with those defined in the
   -- top-level list.
-  local author_insts = flatten(authors:map(function(x) return x.institute end))
+  local author_insts = flatten(authors:map(function(x) return x.affiliations end))
   for _, inst in ipairs(author_insts) do
     merge_on_id(institutes, inst)
   end
@@ -182,7 +182,7 @@ local function canonicalize(raw_author, raw_institute)
     return tostring(select(2, institutes:find_if(has_id(inst.id))))
   end
   for _, author in ipairs(authors) do
-    author.institute = pandoc.MetaList(author.institute:map(to_index))
+    author.affiliations = pandoc.MetaList(author.affiliations:map(to_index))
   end
 
   return authors, institutes
@@ -192,7 +192,7 @@ end
 return {
   {
     Meta = function(meta)
-      meta.author, meta.institute = canonicalize(meta.author, meta.institute)
+      meta.author, meta.affiliations = canonicalize(meta.author, meta.affiliations)
       return meta
     end
   }

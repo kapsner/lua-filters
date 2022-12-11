@@ -54,7 +54,7 @@ local function author_inline_generator (get_mark)
       author_marks[#author_marks + 1] = get_mark 'equal_contributor'
     end
     local idx_str
-    for _, idx in ipairs(author.institute) do
+    for _, idx in ipairs(author.affiliations) do
       if type(idx) ~= 'table' then
         idx_str = tostring(idx)
       else
@@ -157,7 +157,7 @@ return {
       local mark = function (mark_name) return default_marks[mark_name] end
 
       body:extend(create_equal_contributors_block(doc.meta.author, mark) or {})
-      body:extend(create_affiliations_blocks(doc.meta.institute) or {})
+      body:extend(create_affiliations_blocks(doc.meta.affiliations) or {})
       body:extend(create_correspondence_blocks(doc.meta.author, mark) or {})
       body:extend(doc.blocks)
 
@@ -168,7 +168,7 @@ return {
         and pandoc.MetaList(doc.meta.author):map(author_inline_generator(mark))
         or pandoc.MetaInlines(create_authors_inlines(doc.meta.author, mark))
       -- Institute info is now baked into the affiliations block.
-      meta.institute = nil
+      meta.affiliations = nil
 
       return pandoc.Pandoc(body, meta)
     end
